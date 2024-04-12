@@ -7,13 +7,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.graphql.test.tester.GraphQlTester;
 import org.springframework.graphql.test.tester.HttpGraphQlTester;
 import org.springframework.modulith.test.ApplicationModuleTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@ActiveProfiles("in-memory")
 @AutoConfigureHttpGraphQlTester
 @ApplicationModuleTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 public class GoodsCollectionAcceptanceTest {
     @Autowired private HttpGraphQlTester graphQlTester;
+    @Autowired private GoodsCollectionRepository repository;
 
     private GraphQlTester.Path request(String queryString, String requestName) {
         return this.graphQlTester

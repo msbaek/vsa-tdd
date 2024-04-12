@@ -1,10 +1,15 @@
 package com.example.vsatdd.goodscollection;
 
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Repository;
+
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Profile("in-memory")
+@Repository
 public class GoodsCollectionInMemoryRepository implements GoodsCollectionRepository {
     /**
      * 실제 DB에서 죄회한 상품 정보를 담고 있는 Map
