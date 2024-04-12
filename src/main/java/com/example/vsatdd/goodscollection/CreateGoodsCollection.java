@@ -14,8 +14,20 @@ import java.util.List;
 @Transactional
 @Controller
 public class CreateGoodsCollection {
+    private final GoodsCollectionRepository repository;
+
     @MutationMapping("createGoodsCollection")
     public Long createGoodsCollection(@Argument final CreateGoodsCollectionRequest request) {
+        GoodsCollection goodsCollection = new GoodsCollection(request.name(), userId());
+        List<Goods> goodsList = repository.findGoodsByIds(request.ids());
+        for (Goods goods : goodsList) {
+            goodsCollection.addItem(new GoodsCollectionItem(goods));
+        }
+        repository.save(goodsCollection);
+        return goodsCollection.getId();
+    }
+
+    private Long userId() {
         return 1L;
     }
 
