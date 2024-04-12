@@ -199,9 +199,8 @@ public class GoodsCollectionItem {
   - 후에 로직이 복잡해지거나, 중복이 일어나면
   - Application Service → Domain Object(Entity, Value, Domain Service 등)로 추출한다.
 - 그 보다 먼저 **인수 테스트**를 작성하여 언제 TDD가 멈춰야 할 지 알 수 있도록 한다.
-
-![img.png](Inner-and-outer-feedback-loops-in-TDD.png)
-
+- [Double-Loop TDD](https://sammancoaching.org/learning_hours/bdd/double_loop_tdd.html)
+![](https://sammancoaching.org/assets/images/double_loop.jpg)
 - 전체적인 흐름은 위 그림과 같다
   - 실패하는 인수 테스트를 작성한다
   - dummy, stub 등을 이용해서 인수테스트를 통과시킴
@@ -329,19 +328,19 @@ class CreateGoodsCollectionTest {
 }
 ```
 
-- 별도의 협력객체(collaborator)를 사용하지 않고 최대한 테스트 클래스에서 필요한 모든 기능(findById, createGoodsCollection 등)을 구현한다.
+- **별도의 협력객체(collaborator)를 사용하지 않고 최대한 테스트 클래스에서 필요한 모든 기능(findById, createGoodsCollection 등)을 구현**한다.
 - 이후 테스트가 성공하면 적절한 객체로 기능을 이동시킨다
 
 #### make it work
 
 - 테스트 클래스에 모든 구현을 제공하여 성공시키기
 - 테스트 클래스에 Application Service, Repository, Domain Object 등에 구현할 모든 기능을 직관적으로 구현
-  - 리팩터링은 최대한 나중에. 하지만 꼭
+  - **리팩터링은 최대한 나중에. 하지만 꼭**
 
 ```java
 class CreateGoodsCollectionTest {
     /**
-     * 실제 DB에서 죄회한 상품 정보를 담고 있는 Map
+     * 실제 DB에서 조회한 상품 정보를 담고 있는 Map
      * 순서도 유지함
      */
     private final Map<Long, Goods> goodsMap = List.of(
@@ -682,17 +681,16 @@ public class GetGoodsCollection {
     @NoArgsConstructor
     @Getter
     @Entity
-    @Table(name = "GOODS_COLLECTION")
     public class GoodsCollection {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
         private String name;
         private Long createdBy;
         private LocalDateTime createdAt;
         private Long updatedBy;
         private LocalDateTime updatedAt;
-        @OneToMany(mappedBy = "goodsCollection", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+        @OneToMany(mappedBy = "goodsCollection", cascade = CascadeType.ALL, orphanRemoval = true)
         private List<GoodsCollectionItem> goodsCollectionItems = new ArrayList<>();
         // ...
     ```
@@ -814,6 +812,7 @@ public class GetGoodsCollection {
 ### 전체적인 흐름(Inner and outer feedback loops in TDD)
 
 ![img.png](Inner-and-outer-feedback-loops-in-TDD.png)
+- from [Growing Object-Oriented Software, Guided by Tests: Freeman, Steve, Pryce, Nat: 9780321503626: Amazon.com: Books](https://www.amazon.com/Growing-Object-Oriented-Software-Guided-Tests/dp/0321503627)
 
 - Outer TDD
   - 구현 완료를 확인할 수 있는 인수 테스트를 먼저 작성
@@ -823,8 +822,8 @@ public class GetGoodsCollection {
   - InMemory Repository를 사용
 - 기능을 적절한 곳에 배치하는 순서
   - 최초엔 Test 클래스에 **설계를 고려하지 않고 빠르게 절차적으로 구현해서 동작하도록 만들기**
-    - 기능 구현을 완료해 봐야만 문제를 정확히 이해 가능
-    - 구현 중에 발생 가능한 이슈를 사전에 예측하기 어려움
+    - 기능 구현을 완료해 봐야만 **문제를 정확히 이해** 가능
+    - 구현 중에 **발생 가능한 이슈**를 사전에 예측하기 어려움
   - **Test 클래스 → InMemory Repository, Application Service → Application Service -> domain**
     - **SoC**
     - **split by levels of abstraction**
@@ -852,30 +851,28 @@ public class GetGoodsCollection {
   - 구현 초기에 JPA 매핑을 하면 너무 일찍 구현에 의존하게 됨
 - 대개의 경우 리팩터링을 일찍하는 경우가 많은데 JPA를 적용하면 롤백도 어렵고, 더 느려짐
 
+### In Memory Repository를 이용해서 개발 후 부드럽게 영속 계층 구현하기
+- 모든 기능을 InMemory Repository로 구현하고, 이후 JPA Repository로 변경했는데 In Memory Repository를 사용해서 테스트를 성공시킬 때 사용한 검증데이터(xxx approved.txt)를 영속 계층을 구현한 후에도 변경 없이 사용할 수 있어서 부드럽게 진행이 되었음
+
 ### ApprovalsTest
 
 - UI를 보고 확인하는 효과를 줌
   ```yaml
   ---
-  id: 1
   name: "Collection 1"
   createdBy: 1
   createdAt: "2003-05-03T10:11:12.134567"
   goodsCollectionItems:
-    - id: 1
-      goodsNo: 112307
+    - goodsNo: 112307
       goodsId: "GD00112307"
       barcode: "9000000112307"
-    - id: 2
-      goodsNo: 112306
+    - goodsNo: 112306
       goodsId: "GD00112306"
       barcode: "9000000112306"
-    - id: 3
-      goodsNo: 112304
+    - goodsNo: 112304
       goodsId: "GD00112304"
       barcode: "9000000112304"
-    - id: 4
-      goodsNo: 112303
+    - goodsNo: 112303
       goodsId: "GD00112303"
       barcode: "9000000112303"
   ```
