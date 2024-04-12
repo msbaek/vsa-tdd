@@ -1,16 +1,8 @@
 # Develop Application with VSA and TDD
 
-- VSA(Vertical Slicing Architecture), GraphQL, Outside-in / Inside-out TDD를 사용한 Spring Boot Application 개발 예제
-  - 계층이 아니라 기능별로 구현
-  - 이 예제에 나오는 Goods는 전시 상품을 위한 객체. 실제는 엄청난 수의 속성을 갖음
-  - 하지만 상품군(goodscollection) 도메인에서 1개의 속성(goodsNo)만 필요함. 추가적인 속성(goodsId, barcode)들은 시각적으로 도움을 받기 위해 추가한 중복 속성임
-- mockito를 사용하지 않고 dummy, stub을 사용([Test Doubles](https://msbaek.github.io/codetemplate/tdd-terms.html#test-doubles))
-- Test에 application service, repository, domain에 해당하는 로직을 모두 구현한 후 리팩터링(Extract Delegate, Move Instance Method 등)을 통해
-  적합한 객체(Application Service, Repository, Domain object 등)로 로직을 이동하는 방향으로 진행
-- List, HashMap, AtomicLong 등을 이용하는 InMemory Repository로 최대한 구현을 한 후 마지막에 JPA를 통해 영속 계층을 구현
-
 <!-- TOC -->
 * [Develop Application with VSA and TDD](#develop-application-with-vsa-and-tdd)
+  * [개요](#개요)
   * [create project](#create-project)
     * [start.io](#startio)
     * [docker compose 설정](#docker-compose-설정)
@@ -44,8 +36,34 @@
   * [얻은 점들](#얻은-점들)
     * [전체적인 흐름(Inner and outer feedback loops in TDD)](#전체적인-흐름inner-and-outer-feedback-loops-in-tdd)
     * [순수한 Repository(GoodsCollectionRepository)를 사용하는 잇점](#순수한-repositorygoodscollectionrepository를-사용하는-잇점)
+    * [In Memory Repository를 이용해서 개발 후 부드럽게 영속 계층 구현하기](#in-memory-repository를-이용해서-개발-후-부드럽게-영속-계층-구현하기)
     * [ApprovalsTest](#approvalstest)
+  * [참고자료](#참고자료)
 <!-- TOC -->
+
+## 개요
+- [Vertical Slice Architecture](https://www.jimmybogard.com/vertical-slice-architecture/), GraphQL, Outside-in / Inside-out TDD를 사용한 Spring Boot Application 개발 예제
+- Hexagonal vs Vertical Slice
+  - Hexagonal
+    - 방대한 코드베이스에서 많은 개발자들이 협업할 때 지도 역할
+    - 수백명의 개발자. 이직도 잦음
+    - 느리더라도 안전하게 가야했음
+  - Vertical Slice
+    - 서너명의 개발자들이 한가지 서비스를
+    - Hexagonal은 과함
+    - 수직조각. 계층이 아니라 기능별로 구현
+    - 빠름
+    - 하지만 정원 가꾸기를 하지 않으면 기술 부채
+- TDD
+  - 웹, DB를 사용하는 어플리케이션을 개발할 때 어떻게 TDD 하나
+  - 늘 테스트 코드에서 구현을 한 후에 추출해서 모델(프로덕션) 코드로 옮김
+    - [KentBeck/TDD-Tyrant: A sample Java client for Tokyo Tyrant, used to demonstrate test-driven development](https://github.com/KentBeck/TDD-Tyrant) 카타(Kata)에서 배웠음
+    - 내 깃헙 리포 중 [msbaek/learning-test](https://github.com/msbaek/learning-test)에서 새로운 기능을 TDD로 배운 것을 모으고 있음
+  - 아주 자신 있을 때는 모델코드에서 구현하기도 함
+  - mockito를 사용하지 않고 dummy, stub을 사용([Test Doubles](https://msbaek.github.io/codetemplate/tdd-terms.html#test-doubles))
+  - Test에 application service, repository, domain에 해당하는 로직을 모두 구현한 후 리팩터링(Extract Delegate, Move Instance Method 등)을 통해
+    적합한 객체(Application Service, Repository, Domain object 등)로 로직을 이동하는 방향으로 진행
+  - List, HashMap, AtomicLong 등을 이용하는 InMemory Repository로 최대한 구현을 한 후 마지막에 JPA를 통해 영속 계층을 구현
 
 ## create project
 
