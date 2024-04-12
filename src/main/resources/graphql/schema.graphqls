@@ -1,0 +1,12 @@
+type Query {
+    sayHello(name: String): String!
+}
+
+type Mutation {
+    createGoodsCollection(request: CreateGoodsCollectionRequest): ID!
+}
+
+input CreateGoodsCollectionRequest {
+    name: String!
+    ids: [String!]!
+}
