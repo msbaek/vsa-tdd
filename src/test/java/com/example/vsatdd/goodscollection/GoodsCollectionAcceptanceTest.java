@@ -1,5 +1,8 @@
 package com.example.vsatdd.goodscollection;
 
+import com.ktown4u.utils.Neutralizer;
+import com.ktown4u.utils.YamlPrinter;
+import org.approvaltests.Approvals;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.graphql.tester.AutoConfigureHttpGraphQlTester;
@@ -47,5 +50,11 @@ public class GoodsCollectionAcceptanceTest {
                 .entity(Long.class)
                 .get();
         assertThat(result).isGreaterThan(0L);
+        Approvals.verify(
+                Neutralizer.localDateTime(
+                        YamlPrinter.printWithExclusions(
+                                repository.findById(result).get(), "id")
+                )
+        );
     }
 }
