@@ -18,6 +18,7 @@ configurations {
 }
 
 repositories {
+	maven { url 'https://jitpack.io' } // 추가 for ktown4u-utils
 	mavenCentral()
 }
 
@@ -40,6 +41,10 @@ dependencies {
 	testImplementation 'io.projectreactor:reactor-test'
 	testImplementation 'org.springframework.graphql:spring-graphql-test'
 	testImplementation 'org.springframework.modulith:spring-modulith-starter-test'
+
+	implementation 'com.graphql-java:graphql-java-extended-scalars:21.0'
+	testImplementation 'com.approvaltests:approvaltests:23.0.1'
+	testImplementation 'com.github.HMInternational:ktown4u-utils:v1.5.0'
 }
 
 dependencyManagement {

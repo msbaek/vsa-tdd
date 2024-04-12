@@ -83,7 +83,7 @@ spring:
 
 ```gradle
     repositories {
-	maven { url 'https://jitpack.io' } // 추가 for ktown4u-utils
+	    maven { url 'https://jitpack.io' } // 추가 for ktown4u-utils
         mavenCentral()
     }
 
