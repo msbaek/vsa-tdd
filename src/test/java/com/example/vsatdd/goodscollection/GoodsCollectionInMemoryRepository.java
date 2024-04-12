@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class GoodsCollectionInMemoryRepository {
+public class GoodsCollectionInMemoryRepository implements GoodsCollectionRepository {
     /**
      * 실제 DB에서 죄회한 상품 정보를 담고 있는 Map
      * 순서도 유지함
@@ -29,16 +29,19 @@ public class GoodsCollectionInMemoryRepository {
     public GoodsCollectionInMemoryRepository() {
     }
 
-    Optional<GoodsCollection> findById(Long id) {
+    @Override
+    public Optional<GoodsCollection> findById(Long id) {
         return Optional.ofNullable(goodsCollectionMap.get(id));
     }
 
-    void save(GoodsCollection goodsCollection) {
+    @Override
+    public void save(GoodsCollection goodsCollection) {
         goodsCollection.setId(goodsCollectionId.getAndIncrement());
         goodsCollectionMap.put(goodsCollection.getId(), goodsCollection);
     }
 
-    List<Goods> findGoodsByIds(List<String> ids) {
+    @Override
+    public List<Goods> findGoodsByIds(List<String> ids) {
         return goodsMap.values().stream()
                 .filter(goods -> ids.contains(goods.goodsId()) || ids.contains(goods.barcode()))
                 .sorted(Comparator.comparing(Goods::goodsId)) // DB 쿼리와 정렬 순서를 맞추기 위해
