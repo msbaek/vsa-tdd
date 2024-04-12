@@ -10,41 +10,41 @@
 - List, HashMap, AtomicLong 등을 이용하는 InMemory Repository로 최대한 구현을 한 후 마지막에 JPA를 통해 영속 계층을 구현
 
 <!-- TOC -->
-
-- [Develop Application with VSA and TDD](#develop-application-with-vsa-and-tdd)
-  - [create project](#create-project)
-    - [start.io](#startio)
-    - [docker compose 설정](#docker-compose-설정)
-    - [의존성 추가](#의존성-추가)
-    - [Enable Graphql](#enable-graphql)
-    - [Add runtime graphql wiring configurer](#add-runtime-graphql-wiring-configurer)
-  - [도메인 클래스 추가](#도메인-클래스-추가)
-  - [구현 시작](#구현-시작)
-  - [행위 추가하기 - 상품군 생성하기](#행위-추가하기---상품군-생성하기)
-    - [Acceptance Test(인수 테스트) - Outer TDD](#acceptance-test인수-테스트---outer-tdd)
-      - [Mutation 스키마 추가하기](#mutation-스키마-추가하기)
-      - [add acceptance test](#add-acceptance-test)
-      - [make it work with dummy](#make-it-work-with-dummy)
-    - [CreateGoodsCollection 구현 - Inner TDD](#creategoodscollection-구현---inner-tdd)
-      - [add failing test - CreateGoodsCollectionTest#create_goods_collection_returns_newly_created_id](#add-failing-test---creategoodscollectiontestcreate_goods_collection_returns_newly_created_id)
-      - [make it work](#make-it-work)
-      - [Extract Delegate in-memory repository](#extract-delegate-in-memory-repository)
-      - [move instance method from test to model](#move-instance-method-from-test-to-model)
-    - [make acceptance test work using DI](#make-acceptance-test-work-using-di)
-      - [add approvaltests using findById](#add-approvaltests-using-findbyid)
-  - [행위 추가하기 - 상품군 조회하기](#행위-추가하기---상품군-조회하기)
-    - [Acceptance Test(인수 테스트) - Outer TDD](#acceptance-test인수-테스트---outer-tdd-1)
-      - [Query 스키마 추가하기](#query-스키마-추가하기)
-      - [add acceptance test](#add-acceptance-test-1)
-      - [make it work with dummy](#make-it-work-with-dummy-1)
-    - [Inner TDD](#inner-tdd)
-  - [Implement Persistence Layer](#implement-persistence-layer)
-  - [Packaging](#packaging)
-  - [얻은 점들](#얻은-점들)
-    - [전체적인 흐름(Inner and outer feedback loops in TDD)](#전체적인-흐름inner-and-outer-feedback-loops-in-tdd)
-    - [순수한 Repository(GoodsCollectionRepository)를 사용하는 잇점](#순수한-repositorygoodscollectionrepository를-사용하는-잇점)
-    - [ApprovalsTest](#approvalstest)
-
+* [Develop Application with VSA and TDD](#develop-application-with-vsa-and-tdd)
+  * [create project](#create-project)
+    * [start.io](#startio)
+    * [docker compose 설정](#docker-compose-설정)
+    * [의존성 추가](#의존성-추가)
+    * [Enable Graphql & disable boot autoconfigure log](#enable-graphql--disable-boot-autoconfigure-log)
+    * [Add runtime graphql wiring configurer](#add-runtime-graphql-wiring-configurer)
+  * [구현 시작](#구현-시작)
+  * [도메인 클래스 추가](#도메인-클래스-추가)
+    * [기능 요구 사항](#기능-요구-사항)
+    * [정적 설계](#정적-설계)
+  * [행위 추가하기 - 상품군 생성하기](#행위-추가하기---상품군-생성하기)
+    * [Acceptance Test(인수 테스트) - Outer TDD](#acceptance-test인수-테스트---outer-tdd)
+      * [add failing acceptance test](#add-failing-acceptance-test)
+      * [make it work with dummy](#make-it-work-with-dummy)
+    * [CreateGoodsCollection 구현 - Inner TDD](#creategoodscollection-구현---inner-tdd)
+      * [add failing test - CreateGoodsCollectionTest#create_goods_collection_returns_newly_created_id](#add-failing-test---creategoodscollectiontestcreate_goods_collection_returns_newly_created_id)
+      * [make it work](#make-it-work)
+      * [Extract Delegate in-memory repository](#extract-delegate-in-memory-repository)
+      * [Extract Repository Interface](#extract-repository-interface)
+      * [move instance method from test to model](#move-instance-method-from-test-to-model)
+    * [make acceptance test work using DI](#make-acceptance-test-work-using-di)
+      * [add approvaltests using findById](#add-approvaltests-using-findbyid)
+  * [행위 추가하기 - 상품군 조회하기](#행위-추가하기---상품군-조회하기)
+    * [Acceptance Test(인수 테스트) - Outer TDD](#acceptance-test인수-테스트---outer-tdd-1)
+      * [Query 스키마 추가하기](#query-스키마-추가하기)
+      * [add acceptance test](#add-acceptance-test)
+      * [make it work with dummy](#make-it-work-with-dummy-1)
+    * [Inner TDD](#inner-tdd)
+  * [Implement Persistence Layer](#implement-persistence-layer)
+  * [Packaging](#packaging)
+  * [얻은 점들](#얻은-점들)
+    * [전체적인 흐름(Inner and outer feedback loops in TDD)](#전체적인-흐름inner-and-outer-feedback-loops-in-tdd)
+    * [순수한 Repository(GoodsCollectionRepository)를 사용하는 잇점](#순수한-repositorygoodscollectionrepository를-사용하는-잇점)
+    * [ApprovalsTest](#approvalstest)
 <!-- TOC -->
 
 ## create project
@@ -83,7 +83,7 @@ spring:
 
 ```gradle
     repositories {
-	    maven { url 'https://jitpack.io' } // 추가 for ktown4u-utils
+	maven { url 'https://jitpack.io' } // 추가 for ktown4u-utils
         mavenCentral()
     }
 
@@ -134,7 +134,7 @@ public RuntimeWiringConfigurer runtimeWiringConfigurer() {
 ```graphql
 # src/main/resources/graphql/schema.graphqls
 type Query {
-  hello: String
+    hello: String
 }
 ```
 
@@ -158,7 +158,7 @@ type Query {
 
 ### 정적 설계
 
-- 최조 **정적 설계**를 통해 도메인 클래스를 추가(엔터티, 값 객체)
+- 최초 **정적 설계**를 통해 도메인 클래스를 추가(엔터티, 값 객체)
   - GoodsCollection, GoodsCollectionItem, Goods
   - 클래스, 속성, 관계에 집중
 
@@ -195,12 +195,26 @@ public class GoodsCollectionItem {
 
 - Service, Repository, Domain Service 등을 구현하고 Controller를 연동하고 싶은가 ?
 - 이런 경우 Controller 구현 시 예기치 않은 문제로 미리 구현한 클래스들에 대단위 수정을 가해야 하는 경우를 종종 겪었다
-- 여기서는 `Controller + Application Service` 구현부터 시작한다.
+- 여기서는 `Controller + Application Service`를 하나의 클래스로 구현하는 것으로 시작한다.
+  - 후에 로직이 복잡해지거나, 중복이 일어나면
+  - Application Service → Domain Object(Entity, Value, Domain Service 등)로 추출한다.
 - 그 보다 먼저 **인수 테스트**를 작성하여 언제 TDD가 멈춰야 할 지 알 수 있도록 한다.
+
+![img.png](Inner-and-outer-feedback-loops-in-TDD.png)
+
+- 전체적인 흐름은 위 그림과 같다
+  - 실패하는 인수 테스트를 작성한다
+  - dummy, stub 등을 이용해서 인수테스트를 통과시킴
+  - Inner TDD를 수행
+    - failing test 추가
+    - make it work
+    - refactor
+  - Inner TDD로 필요한 객체들의 구현을 완료하면 인수 테스트에서 이 객체들을 사용해서 성공하는지 확인
+- Repository Interface를 정의하고, Map 이용한 InMemory Repository를 구현해서 모든 기능을 구현하고, 마지막으로 JPA 매핑 등을 통해 영속 계층을 구현하는 흐름을 따른다.
 
 ### Acceptance Test(인수 테스트) - Outer TDD
 
-#### add acceptance test
+#### add failing acceptance test
 
 - 언제 요구되는 기능이 완료되었는지 알 수 있게 해 주는 인수 테스트 작성
   - 상품군 조회 기능이 더 쉽지만 많은 것을 필요로 함
@@ -220,7 +234,7 @@ public class GoodsCollectionAcceptanceTest {
                 mutation {
                     createGoodsCollection(request: {
                         name: "Collection 1"
-                        ids: ["9000000112303", "9000000112304", "GD00112306", "GD00112307"]
+                        ids: ["GD00112296", "GD00112297", "9000000112298", "9000000112299"]
                     })
                 }
                 """;
@@ -248,16 +262,16 @@ public class GoodsCollectionAcceptanceTest {
 
 ```graphql
 type Query {
-  sayHello(name: String): String!
+    sayHello(name: String): String!
 }
 
 type Mutation {
-  createGoodsCollection(request: CreateGoodsCollectionRequest): ID!
+    createGoodsCollection(request: CreateGoodsCollectionRequest): ID!
 }
 
 input CreateGoodsCollectionRequest {
-  name: String!
-  ids: [String!]!
+    name: String!
+    ids: [String!]!
 }
 ```
 
@@ -279,7 +293,8 @@ public class CreateGoodsCollection {
 }
 ```
 
-- mockito를 이용할 수도 있지만 dummy를 이용한 편이 훨씬 더 편하고, 빠른 것 같다.
+- mockito를 이용할 수도 있지만 dummy([Test Doubles](https://msbaek.github.io/codetemplate/tdd-terms.html#test-doubles))를 이용한 편이
+  훨씬 더 편하고, 빠른 것 같다.
   - 심지어 최근엔 copilot 등으로 인해 자동 완성이 엄청나다.
   - Dto, Domain 모델의 속성 등을 알려주고 json, sql 등을 만들어 달라고 하면 그런 데이터도 쉽게 만들어 준다
 
@@ -289,26 +304,33 @@ public class CreateGoodsCollection {
 
 ```java
 class CreateGoodsCollectionTest {
-    private CreateGoodsCollection createGoodsCollection = new CreateGoodsCollection();
-
     @Test
     void create_goods_collection_returns_newly_created_id() {
-        Long newlyCreatedId = createGoodsCollection.createGoodsCollection(
+        Long newlyCreatedId = createGoodsCollection(
                 new CreateGoodsCollection.CreateGoodsCollectionRequest(
                         "Collection 1",
-                        List.of("9000000112303", "9000000112304", "GD00112306", "GD00112307"));
+                        List.of("GD00112296", "GD00112297", "9000000112298", "9000000112299")));
         assertThat(newlyCreatedId).isGreaterThan(0L);
+        Approvals.verify(
+                Neutralizer.localDateTime(
+                        YamlPrinter.printWithExclusions(
+                                findById(newlyCreatedId).get(), "id")
+                )
+        );
+    }
 
-        // Then
-        // GoodsCollection goodsCollection = findById(result).get();
-        // Approvals.verify(
-        //         Neutralizer.localDateTime(
-        //                 YamlPrinter.printWithExclusions(goodsCollection, "updatedBy", "updatedAt", "goodsCollection")
-        //         )
-        // );
+    private Optional<GoodsCollection> findById(Long id) {
+        throw new UnsupportedOperationException("CreateGoodsCollectionTest::findById not implemented yet");
+    }
+
+    private Long createGoodsCollection(CreateGoodsCollection.CreateGoodsCollectionRequest createGoodsCollectionRequest) {
+        throw new UnsupportedOperationException("CreateGoodsCollectionTest::createGoodsCollection not implemented yet");
     }
 }
 ```
+
+- 별도의 협력객체(collaborator)를 사용하지 않고 최대한 테스트 클래스에서 필요한 모든 기능(findById, createGoodsCollection 등)을 구현한다.
+- 이후 테스트가 성공하면 적절한 객체로 기능을 이동시킨다
 
 #### make it work
 
@@ -319,71 +341,70 @@ class CreateGoodsCollectionTest {
 ```java
 class CreateGoodsCollectionTest {
     /**
-     * 이런 데이터는 실DB에서 추출해서 원하는 형태로 변환해서 사용
+     * 실제 DB에서 죄회한 상품 정보를 담고 있는 Map
+     * 순서도 유지함
      */
-    private final List<Goods> goodsList = List.of(
-            new Goods(112307L, "GD00112307", "9000000112307"),
-            new Goods(112306L, "GD00112306", "9000000112306"),
-            new Goods(112304L, "GD00112304", "9000000112304"),
-            new Goods(112303L, "GD00112303", "9000000112303"),
-            new Goods(112301L, "GD00112301", "9000000112300"),
-            new Goods(112300L, "GD00112300", "9000000112300"),
-            new Goods(112299L, "GD00112299", "9000000112299"),
-            new Goods(112298L, "GD00112298", "9000000112298"),
-            new Goods(112297L, "GD00112297", "9000000112297"),
-            new Goods(112296L, "GD00112296", "9000000112296")
-    );
-    private CreateGoodsCollection createGoodsCollection = new CreateGoodsCollection();
-    private AtomicLong goodsCollectionId = new AtomicLong(1);
-    private Map<Long, GoodsCollection> goodsCollections = new LinkedHashMap<>();
+    private final Map<Long, Goods> goodsMap = List.of(
+                    new Goods(112296L, "GD00112296", "9000000112296"),
+                    new Goods(112297L, "GD00112297", "9000000112297"),
+                    new Goods(112298L, "GD00112298", "9000000112298"),
+                    new Goods(112299L, "GD00112299", "9000000112299"),
+                    new Goods(112300L, "GD00112300", "9000000112300"),
+                    new Goods(112301L, "GD00112301", "9000000112300"),
+                    new Goods(112303L, "GD00112303", "9000000112303"),
+                    new Goods(112304L, "GD00112304", "9000000112304"),
+                    new Goods(112306L, "GD00112306", "9000000112306"),
+                    new Goods(112307L, "GD00112307", "9000000112307"))
+            .stream()
+            .collect(toMap(Goods::goodsNo, Function.identity()));
+    private final AtomicLong goodsCollectionId = new AtomicLong(1L);
+    private Map<Long, GoodsCollection> goodsCollectionMap = new HashMap<>();
 
     @Test
     void create_goods_collection_returns_newly_created_id() {
         Long newlyCreatedId = createGoodsCollection(
                 new CreateGoodsCollection.CreateGoodsCollectionRequest(
                         "Collection 1",
-                        List.of("9000000112303", "9000000112304", "GD00112306", "GD00112307")));
+                        List.of("GD00112296", "GD00112297", "9000000112298", "9000000112299")));
         assertThat(newlyCreatedId).isGreaterThan(0L);
+        Approvals.verify(
+                Neutralizer.localDateTime( // LcoalDateTime 형식 문자열을 지정된 문자열로 치환하여 시간 변경을 무력화
+                        YamlPrinter.printWithExclusions( // YAML 형식으로 데이터를 출력하는데 "id" 필드는 제외함
+                                findById(newlyCreatedId).get(), "id")
+                )
+        );
     }
 
-    private Long createGoodsCollection(CreateGoodsCollection.CreateGoodsCollectionRequest createGoodsCollectionRequest) {
-        GoodsCollection collection = GoodsCollection.of(createGoodsCollectionRequest.name(), getUserId());
-        List<Goods> goods = listGoodsByIds(createGoodsCollectionRequest.ids());
-        for (Goods good : goods) {
-            collection.addItem(GoodsCollectionItem.from(good));
+    private Optional<GoodsCollection> findById(Long id) {
+        return Optional.ofNullable(goodsCollectionMap.get(id));
+    }
+
+    private Long createGoodsCollection(CreateGoodsCollection.CreateGoodsCollectionRequest request) {
+        GoodsCollection goodsCollection = new GoodsCollection(request.name(), userId());
+        List<Goods> goodsList = findGoodsByIds(request.ids());
+        for (Goods goods : goodsList) {
+            goodsCollection.addItem(new GoodsCollectionItem(goods));
         }
-        save(collection);
-        return collection.getId();
+        save(goodsCollection);
+        return goodsCollection.getId();
     }
 
-    private GoodsCollection save(GoodsCollection collection) {
-        collection.setId(goodsCollectionId.getAndIncrement());
-        goodsCollections.put(collection.getId(), collection);
-        return collection;
+    private void save(GoodsCollection goodsCollection) {
+        goodsCollection.setId(goodsCollectionId.getAndIncrement());
+        goodsCollectionMap.put(goodsCollection.getId(), goodsCollection);
     }
 
-    private List<Goods> listGoodsByIds(List<String> ids) {
-        return goodsList.stream()
-                .filter(goods -> ids.contains(goods.barcode()) || ids.contains(goods.goodsId()))
-                .collect(Collectors.toList());
+    private List<Goods> findGoodsByIds(List<String> ids) {
+        return goodsMap.values().stream()
+                .filter(goods -> ids.contains(goods.goodsId()) || ids.contains(goods.barcode()))
+                .sorted(Comparator.comparing(Goods::goodsId)) // DB 쿼리와 정렬 순서를 맞추기 위해
+                .toList();
     }
 
-    private Long getUserId() {
+    private Long userId() {
         return 1L;
     }
 }
-```
-
-- apply Approvals.verify, yaml printer and neutralizer
-
-```java
-        // ...
-assertThat(newlyCreatedId).
-
-isGreaterThan(0L);
-Approvals.verify(
-  Neutralizer.localDateTime(
-    YamlPrinter.printWithExclusions(findById(newlyCreatedId).get(), "id")));
 ```
 
 #### Extract Delegate in-memory repository
@@ -393,9 +414,9 @@ Approvals.verify(
 
   - ![img.png](extract-delegate-in-memory-repository.png)
 
-- extract interface
+#### Extract Repository Interface
 
-  - ![img.png](extract-interface-repository.png)
+- ![img.png](extract-interface-repository.png)
 
 - **테스트 작성 시점에 Repository Interface를 먼저 정하는 것이 좋을수도**
   - in memory repository의 인터페이스가 부적합해 질 수 있음
@@ -420,7 +441,7 @@ public class GoodsCollectionInMemoryRepository implements GoodsCollectionReposit
 
 ```java
     Approvals.verify(
-      Neutralizer.localDateTime(
+        Neutralizer.localDateTime(
         YamlPrinter.printWithExclusions(repository.findById(result).get(), "id")));
 ```
 
@@ -432,55 +453,53 @@ public class GoodsCollectionInMemoryRepository implements GoodsCollectionReposit
 
 ```graphql
 type Query {
-  listGoodsCollection(
-    request: SearchDto = { sort: { by: createdAt, direction: desc } }
-  ): GoodsCollectionSlice
+    listGoodsCollection( request: SearchDto = { sort: { by: createdAt, direction: desc } } ): GoodsCollectionSlice
 }
 
 type GoodsCollectionSlice {
-  totalElements: Int
-  content: [GoodsCollectionDto]
+    totalElements: Int
+    content: [GoodsCollectionDto]
 }
 
 type GoodsCollectionDto {
-  id: ID!
-  name: String!
-  createdBy: Int!
-  createdAt: String!
-  updatedBy: Int
-  updatedAt: String
-  goodsCollectionItems: [GoodsCollectionItemDto]
+    id: ID!
+    name: String!
+    createdBy: Int!
+    createdAt: String!
+    updatedBy: Int
+    updatedAt: String
+    goodsCollectionItems: [GoodsCollectionItemDto]
 }
 
 type GoodsCollectionItemDto {
-  goodsNo: Int!
-  goodsId: String!
-  barcode: String
+    goodsNo: Int!
+    goodsId: String!
+    barcode: String
 }
 
 input SearchDto {
-  keyword: String = ""
-  type: String = "name"
-  page: Int = 0
-  size: Int = 20
-  sort: Sort = { by: createdAt, direction: desc }
+    keyword: String = ""
+    type: String = "name"
+    page: Int = 0
+    size: Int = 20
+    sort: Sort = { by: createdAt, direction: desc }
 }
 
 input Sort {
-  by: SortBy = createdAt
-  direction: SortDirection = desc
+    by: SortBy = createdAt
+    direction: SortDirection = desc
 }
 
 enum SortBy {
-  createdAt
-  barcode
-  id
-  name
+    createdAt
+    barcode
+    id
+    name
 }
 
 enum SortDirection {
-  asc
-  desc
+    asc
+    desc
 }
 
 scalar BigDecimal
@@ -493,17 +512,16 @@ scalar DateTime
 ```java
 
 @Test
-public void query_pagedGoodsCollection() throws Exception {
+public void listGoodsCollection() throws Exception {
     String queryString = """
              query {
                listGoodsCollection(request: {
-                 keyword: "Collection",
+                 keyword: "Collection 0",
                  type: "type",
                  page: 0,
                  size: 10
                }) {
                  content {
-                   id
                    name
                    createdBy
                    createdAt
@@ -517,7 +535,7 @@ public void query_pagedGoodsCollection() throws Exception {
             }
              """;
 
-    List<GetGoodsCollection.GoodsCollectionDto> result = request(queryString, "pagedGoodsCollection.content")
+    List<GetGoodsCollection.GoodsCollectionDto> result = request(queryString, "listGoodsCollection.content")
             .entityList(GetGoodsCollection.GoodsCollectionDto.class)
             .get();
     Approvals.verify(Neutralizer.localDateTime(YamlPrinter.printWithExclusions(result, "updatedBy", "updatedAt")));
@@ -535,10 +553,11 @@ public class GetGoodsCollection {
         return new PageImpl<>(Collections.emptyList(), PageRequest.of(request.page(), request.size()), 0);
     }
 
-    record GoodsCollectionDto(Long id, String name, List<GoodsCollectionItemDto> items) {
+    record GoodsCollectionDto(String name, Long createdBy, LocalDateTime createdAt, Long updatedBy,
+                              LocalDateTime updatedAt, List<GoodsCollectionItemDto> goodsCollectionItems) {
     }
 
-    record GoodsCollectionItemDto(String goodsNo, String goodsId, String barcode) {
+    record GoodsCollectionItemDto(Long goodsNo, String goodsId, String barcode) {
     }
 }
 ```
@@ -589,8 +608,8 @@ public class GetGoodsCollection {
 
     @QueryMapping("listGoodsCollection")
     public Page<GoodsCollectionDto> listGoodsCollection(@Argument final SearchDto request) {
-        List<GoodsCollection> goodsList = repository.findByNameContaining(request.keyword());
-        List<GoodsCollectionDto> result = goodsList.stream()
+        List<GoodsCollection> goodsCollections = repository.findByNamingContaining(request.keyword(), request.pageableWithSort());
+        List<GoodsCollectionDto> result = goodsCollections.stream()
                 .map(GoodsCollectionDto::from)
                 .toList();
         return new PageImpl<>(result, PageRequest.of(request.page(), request.size()), result.size());
@@ -598,28 +617,45 @@ public class GetGoodsCollection {
 
     record GoodsCollectionDto(Long id, String name, Long createdBy, LocalDateTime createdAt, Long updatedBy,
                               LocalDateTime updatedAt, List<GoodsCollectionItemDto> goodsCollectionItems) {
-        public static GoodsCollectionDto from(GoodsCollection collection) {
-            List<GoodsCollectionItemDto> itemDtoList = collection.getGoodsCollectionItems().stream()
-                    .map(item -> GoodsCollectionItemDto.of(item))
+        public static GoodsCollectionDto from(GoodsCollection goodsCollection) {
+            List<GoodsCollectionItemDto> itemDtoList = goodsCollection.getGoodsCollectionItems().stream()
+                    .map(GoodsCollectionItemDto::from)
                     .toList();
-            GoodsCollectionDto goodsCollectionDto = GoodsCollectionDto.of(collection, itemDtoList);
-            return goodsCollectionDto;
-        }
-
-        private static GoodsCollectionDto of(GoodsCollection collection, List<GoodsCollectionItemDto> itemDtoList) {
-            return new GoodsCollectionDto(collection.getId(), collection.getName(),
-                    collection.getCreatedBy(), collection.getCreatedAt(),
-                    collection.getUpdatedBy(), collection.getUpdatedAt(),
-                    itemDtoList);
+            return new GoodsCollectionDto(goodsCollection.getId(), goodsCollection.getName(), goodsCollection.getCreatedBy(), goodsCollection.getCreatedAt(), goodsCollection.getUpdatedBy(), goodsCollection.getUpdatedAt(), itemDtoList);
         }
     }
 
     record GoodsCollectionItemDto(Long goodsNo, String goodsId, String barcode) {
-        public static GoodsCollectionItemDto of(GoodsCollectionItem item) {
-            return new GoodsCollectionItemDto(item.getGoodsNo(), item.getGoodsId(), item.getBarcode());
+        public static GoodsCollectionItemDto from(GoodsCollectionItem goodsCollectionItem) {
+            return new GoodsCollectionItemDto(goodsCollectionItem.getGoodsNo(), goodsCollectionItem.getGoodsId(), goodsCollectionItem.getBarcode());
         }
     }
 }
+```
+
+- listGoodsCollection을 위한 최기 데이터 생성 로직(InMemory Repository) 추가
+
+```java
+    public GoodsCollectionInMemoryRepository() {
+        createGoodsCollectionForList();
+    }
+
+    private void createGoodsCollectionForList() {
+        GoodsCollection goodsCollection = new GoodsCollection("Collection 0", 1L);
+        goodsCollection.setId(goodsCollectionId.getAndIncrement());
+        goodsCollection.addItem(new GoodsCollectionItem(goodsMap.get(112296L)));
+        goodsCollection.addItem(new GoodsCollectionItem(goodsMap.get(112297L)));
+        goodsCollection.addItem(new GoodsCollectionItem(goodsMap.get(112298L)));
+        goodsCollection.addItem(new GoodsCollectionItem(goodsMap.get(112299L)));
+        goodsCollectionMap.put(goodsCollection.getId(), goodsCollection);
+    }
+
+    @Override
+    public List<GoodsCollection> findByNamingContaining(String keyword, Pageable pageable) {
+        return goodsCollectionMap.values().stream()
+                .filter(goodsCollection -> goodsCollection.getName().contains(keyword))
+                .toList();
+    }
 ```
 
 ## Implement Persistence Layer
@@ -641,7 +677,133 @@ public class GetGoodsCollection {
         - Abstract Repository를 상속
         - Abstract에서 구현하지 않은 메서드만 구현
 - jpa mapping
+  - GoodsCollection
+    ```java
+    @NoArgsConstructor
+    @Getter
+    @Entity
+    @Table(name = "GOODS_COLLECTION")
+    public class GoodsCollection {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
+        private String name;
+        private Long createdBy;
+        private LocalDateTime createdAt;
+        private Long updatedBy;
+        private LocalDateTime updatedAt;
+        @OneToMany(mappedBy = "goodsCollection", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+        private List<GoodsCollectionItem> goodsCollectionItems = new ArrayList<>();
+        // ...
+    ```
+    - GoodsCollectionItem
+    ```java
+    @Getter
+    @NoArgsConstructor
+    @Entity
+    public class GoodsCollectionItem {
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
+        private Long goodsNo;
+        private String goodsId;
+        private String barcode;
+        @JsonIgnore
+        @ManyToOne
+        @JoinColumn(name = "GOODS_COLLECTION_ID", nullable = false)
+        private GoodsCollection goodsCollection;
+        // ...
+    ```
 - add repository classes
+  - AbstractGoodsCollectionRepository
+    ```java
+    @RequiredArgsConstructor
+    public abstract class AbstractGoodsCollectionRepository implements GoodsCollectionRepository {
+        private final GoodsCollectionJpaRepository jpaRepository;
+
+        @Override
+        public Optional<GoodsCollection> findById(Long id) {
+            return jpaRepository.findById(id);
+        }
+
+        @Override
+        public GoodsCollection save(GoodsCollection goodsCollection) {
+            return jpaRepository.save(goodsCollection);
+        }
+
+        @Override
+        public List<GoodsCollection> findByNamingContaining(String keyword, Pageable pageable) {
+            return jpaRepository.findByNameContaining(keyword, pageable);
+        }
+    }
+    ```
+    - GoodsCollectionJpaRepository
+    ```java
+    public interface GoodsCollectionJpaRepository extends JpaRepository<GoodsCollection, Long> {
+        List<GoodsCollection> findByNameContaining(String keyword, Pageable pageable);
+    }
+    ```
+    - GoodsCollectionRepositoryImpl
+    ```java
+    @Profile("prod")
+    @Repository
+    public class GoodsCollectionRepositoryImpl extends AbstractGoodsCollectionRepository {
+    @PersistenceContext
+    private EntityManager em;
+
+        public GoodsCollectionRepositoryImpl(GoodsCollectionJpaRepository jpaRepository) {
+            super(jpaRepository);
+        }
+
+        @Override
+        public List<Goods> findGoodsByIds(List<String> ids) {
+            List<Object[]> resultList = em.createNativeQuery("""
+                            select g.goods_no goodsno, g.goods_id as goodsid, g.barcode as barcode
+                             from goods g
+                              where (g.goods_id in :ids)
+                              or (g.barcode in :ids)
+                              order by g.goods_no
+                """).setParameter("ids", ids).getResultList();
+            return resultList.stream()
+                    .map(result -> Goods.of((Object[]) result))
+                    .toList();
+        }
+    }
+    ```
+- seed data
+  - GOODS.sql
+    ```sql
+    create table if not exists goods
+    (
+        goods_no bigint comment '상품no' primary key,
+        goods_id varchar(20)              null comment '상품id',
+        barcode  varchar(100)             null comment '바코드'
+    );
+    delete from goods_collection_item where 1 = 1;
+    delete from goods_collection where 1 = 1;
+    delete from goods where 1 = 1;
+    insert into goods (goods_no, goods_id, barcode) values (112296, 'GD00112296', '9000000112296') on duplicate key update goods_id=values(goods_id), barcode=values(barcode);
+    insert into goods (goods_no, goods_id, barcode) values (112297, 'GD00112297', '9000000112297') on duplicate key update goods_id=values(goods_id), barcode=values(barcode);
+    insert into goods (goods_no, goods_id, barcode) values (112298, 'GD00112298', '9000000112298') on duplicate key update goods_id=values(goods_id), barcode=values(barcode);
+    insert into goods (goods_no, goods_id, barcode) values (112299, 'GD00112299', '9000000112299') on duplicate key update goods_id=values(goods_id), barcode=values(barcode);
+    insert into goods (goods_no, goods_id, barcode) values (112300, 'GD00112300', '9000000112300') on duplicate key update goods_id=values(goods_id), barcode=values(barcode);
+    insert into goods (goods_no, goods_id, barcode) values (112301, 'GD00112301', '9000000112300') on duplicate key update goods_id=values(goods_id), barcode=values(barcode);
+    insert into goods (goods_no, goods_id, barcode) values (112303, 'GD00112303', '9000000112303') on duplicate key update goods_id=values(goods_id), barcode=values(barcode);
+    insert into goods (goods_no, goods_id, barcode) values (112304, 'GD00112304', '9000000112304') on duplicate key update goods_id=values(goods_id), barcode=values(barcode);
+    insert into goods (goods_no, goods_id, barcode) values (112306, 'GD00112306', '9000000112306') on duplicate key update goods_id=values(goods_id), barcode=values(barcode);
+    insert into goods (goods_no, goods_id, barcode) values (112307, 'GD00112307', '9000000112307') on duplicate key update goods_id=values(goods_id), barcode=values(barcode);
+    ```
+  - GOODS_COLLECTION.sql
+    ```sql
+    delete from goods_collection_item where 1 = 1;
+    delete from goods_collection where 1 = 1;
+    INSERT INTO goods_collection (created_at, created_by, id, updated_at, updated_by, name) VALUES ('2024-04-07 21:40:58.095256', 1, 1, null, null, 'Collection 0');
+    INSERT INTO goods_collection_item (goods_collection_id, goods_no, id, barcode, goods_id) VALUES (1, 112296, 1, '9000000112296', 'GD00112296');
+    INSERT INTO goods_collection_item (goods_collection_id, goods_no, id, barcode, goods_id) VALUES (1, 112297, 2, '9000000112297', 'GD00112297');
+    INSERT INTO goods_collection_item (goods_collection_id, goods_no, id, barcode, goods_id) VALUES (1, 112298, 3, '9000000112298', 'GD00112298');
+    INSERT INTO goods_collection_item (goods_collection_id, goods_no, id, barcode, goods_id) VALUES (1, 112299, 4, '9000000112299', 'GD00112299');
+    ```
+  - seed data는 in memory에서 사용하는 데이터와 동일하게
 
 ## Packaging
 
