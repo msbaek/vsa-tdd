@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface GoodsCollectionRepository {
     Optional<GoodsCollection> findById(Long id);
 
-    void save(GoodsCollection goodsCollection);
+    GoodsCollection save(GoodsCollection goodsCollection);
 
     List<Goods> findGoodsByIds(List<String> ids);
 

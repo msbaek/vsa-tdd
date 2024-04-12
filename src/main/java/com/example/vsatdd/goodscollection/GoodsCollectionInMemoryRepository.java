@@ -52,9 +52,10 @@ public class GoodsCollectionInMemoryRepository implements GoodsCollectionReposit
     }
 
     @Override
-    public void save(GoodsCollection goodsCollection) {
+    public GoodsCollection save(GoodsCollection goodsCollection) {
         goodsCollection.setId(goodsCollectionId.getAndIncrement());
         goodsCollectionMap.put(goodsCollection.getId(), goodsCollection);
+        return goodsCollection;
     }
 
     @Override

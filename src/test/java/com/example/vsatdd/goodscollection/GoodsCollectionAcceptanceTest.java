@@ -11,12 +11,14 @@ import org.springframework.graphql.test.tester.GraphQlTester;
 import org.springframework.graphql.test.tester.HttpGraphQlTester;
 import org.springframework.modulith.test.ApplicationModuleTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ActiveProfiles("in-memory")
+// @ActiveProfiles("in-memory")
+@ActiveProfiles("prod")
 @AutoConfigureHttpGraphQlTester
 @ApplicationModuleTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 public class GoodsCollectionAcceptanceTest {
@@ -33,6 +35,7 @@ public class GoodsCollectionAcceptanceTest {
     }
 
     @Test
+    @Sql("classpath:GOODS.sql")
     public void create_goods_collection() throws Exception {
         /**
          * 테스트 데이터는 InMemoryRepository를 사용할 때와 실제 DB를 사용할 때 동일한 값을 사용하도록 준비하면
@@ -61,6 +64,7 @@ public class GoodsCollectionAcceptanceTest {
     }
 
     @Test
+    @Sql("classpath:GOODS_COLLECTION.sql")
     public void listGoodsCollection() throws Exception {
         String queryString = """
              query {
