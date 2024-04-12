@@ -4,3 +4,12 @@ spring:
       lifecycle-management: start_only
       skip:
         in-tests: false
+  jpa:
+    hibernate:
+      ddl-auto: update
+  graphql:
+    graphiql:
+      enabled: true
+logging:
+  level:
+    org.springframework.springboot.autoconfigure.logging: ERROR
