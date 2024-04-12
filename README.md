@@ -878,3 +878,7 @@ public class GetGoodsCollection {
   ```
 - 회사에서 사용 중인 YamlPrinter, Neutralizer 등을 이용해서 포커싱해야 하는 정보만 확인
 - 꼭 필요한 정보만 보여줘서 가독성을 높게
+
+## 참고자료
+- [Vertical Slice Architecture - Jimmy Bogard](https://www.jimmybogard.com/vertical-slice-architecture/)
+- [Vertical Slicing Architectures - Victor Rentea](https://www.youtube.com/watch?v=H7HWOlANX78&list=WL&index=27&t=34s)
