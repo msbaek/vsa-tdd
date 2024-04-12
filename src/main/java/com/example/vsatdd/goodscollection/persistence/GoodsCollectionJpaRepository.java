@@ -1,5 +1,6 @@
-package com.example.vsatdd.goodscollection;
+package com.example.vsatdd.goodscollection.persistence;
 
+import com.example.vsatdd.goodscollection.domain.GoodsCollection;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 

@@ -1,5 +1,6 @@
-package com.example.vsatdd.goodscollection;
+package com.example.vsatdd.goodscollection.persistence;
 
+import com.example.vsatdd.goodscollection.domain.Goods;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.context.annotation.Profile;

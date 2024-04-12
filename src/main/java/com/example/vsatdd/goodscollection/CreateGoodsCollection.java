@@ -1,5 +1,9 @@
 package com.example.vsatdd.goodscollection;
 
+import com.example.vsatdd.goodscollection.domain.Goods;
+import com.example.vsatdd.goodscollection.domain.GoodsCollection;
+import com.example.vsatdd.goodscollection.domain.GoodsCollectionItem;
+import com.example.vsatdd.goodscollection.domain.GoodsCollectionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.graphql.data.method.annotation.Argument;

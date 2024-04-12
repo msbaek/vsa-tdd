@@ -1,5 +1,9 @@
-package com.example.vsatdd.goodscollection;
+package com.example.vsatdd.goodscollection.persistence;
 
+import com.example.vsatdd.goodscollection.domain.Goods;
+import com.example.vsatdd.goodscollection.domain.GoodsCollection;
+import com.example.vsatdd.goodscollection.domain.GoodsCollectionItem;
+import com.example.vsatdd.goodscollection.domain.GoodsCollectionRepository;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;

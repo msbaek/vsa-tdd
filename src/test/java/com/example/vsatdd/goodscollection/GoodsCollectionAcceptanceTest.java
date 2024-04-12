@@ -1,5 +1,6 @@
 package com.example.vsatdd.goodscollection;
 
+import com.example.vsatdd.goodscollection.domain.GoodsCollectionRepository;
 import com.ktown4u.utils.Neutralizer;
 import com.ktown4u.utils.YamlPrinter;
 import org.approvaltests.Approvals;

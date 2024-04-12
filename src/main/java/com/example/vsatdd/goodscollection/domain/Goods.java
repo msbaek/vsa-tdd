@@ -1,4 +1,4 @@
-package com.example.vsatdd.goodscollection;
+package com.example.vsatdd.goodscollection.domain;
 
 public record Goods(Long goodsNo, String goodsId, String barcode) {
     public static Goods of(Object[] row) {

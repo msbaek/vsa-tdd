@@ -1,4 +1,4 @@
-package com.example.vsatdd.goodscollection;
+package com.example.vsatdd.goodscollection.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;

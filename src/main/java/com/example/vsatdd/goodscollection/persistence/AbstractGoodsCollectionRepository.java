@@ -1,5 +1,7 @@
-package com.example.vsatdd.goodscollection;
+package com.example.vsatdd.goodscollection.persistence;
 
+import com.example.vsatdd.goodscollection.domain.GoodsCollection;
+import com.example.vsatdd.goodscollection.domain.GoodsCollectionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 
