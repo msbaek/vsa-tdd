@@ -1,0 +1,62 @@
+type Query {
+    listGoodsCollection( request: SearchDto = { sort: { by: createdAt, direction: desc } } ): GoodsCollectionSlice
+}
+
+type Mutation {
+    createGoodsCollection(request: CreateGoodsCollectionRequest): ID!
+}
+
+input CreateGoodsCollectionRequest {
+    name: String!
+    ids: [String!]!
+}
+
+type GoodsCollectionSlice {
+    totalElements: Int
+    content: [GoodsCollectionDto]
+}
+
+type GoodsCollectionDto {
+    id: ID!
+    name: String!
+    createdBy: Int!
+    createdAt: String!
+    updatedBy: Int
+    updatedAt: String
+    goodsCollectionItems: [GoodsCollectionItemDto]
+}
+
+type GoodsCollectionItemDto {
+    goodsNo: Int!
+    goodsId: String!
+    barcode: String
+}
+
+input SearchDto {
+    keyword: String = ""
+    type: String = "name"
+    page: Int = 0
+    size: Int = 20
+    sort: Sort = { by: createdAt, direction: desc }
+}
+
+input Sort {
+    by: SortBy = createdAt
+    direction: SortDirection = desc
+}
+
+enum SortBy {
+    createdAt
+    barcode
+    id
+    name
+}
+
+enum SortDirection {
+    asc
+    desc
+}
+
+scalar BigDecimal
+scalar Date
+scalar DateTime
