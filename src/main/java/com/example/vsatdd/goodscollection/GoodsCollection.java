@@ -15,4 +15,19 @@ public class GoodsCollection {
     private Long updatedBy;
     private LocalDateTime updatedAt;
     private List<GoodsCollectionItem> goodsCollectionItems = new ArrayList<>();
+
+    public GoodsCollection(String name, Long createdBy) {
+        this.name = name;
+        this.createdBy = this.updatedBy = createdBy;
+        this.createdAt = this.updatedAt = LocalDateTime.now();
+    }
+
+    public void addItem(GoodsCollectionItem goodsCollectionItem) {
+        goodsCollectionItems.add(goodsCollectionItem);
+        goodsCollectionItem.setGoodsCollection(this);
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 }
