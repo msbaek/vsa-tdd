@@ -1,0 +1,17 @@
+---
+- name: "Collection 0"
+  createdBy: 1
+  createdAt: "2003-05-03T10:11:12.134567"
+  goodsCollectionItems:
+  - goodsNo: 112296
+    goodsId: "GD00112296"
+    barcode: "9000000112296"
+  - goodsNo: 112297
+    goodsId: "GD00112297"
+    barcode: "9000000112297"
+  - goodsNo: 112298
+    goodsId: "GD00112298"
+    barcode: "9000000112298"
+  - goodsNo: 112299
+    goodsId: "GD00112299"
+    barcode: "9000000112299"

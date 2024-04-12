@@ -65,13 +65,12 @@ public class GoodsCollectionAcceptanceTest {
         String queryString = """
              query {
                listGoodsCollection(request: {
-                 keyword: "Collection",
+                 keyword: "Collection 0",
                  type: "type",
                  page: 0,
                  size: 10
                }) {
                  content {
-                   id
                    name
                    createdBy
                    createdAt

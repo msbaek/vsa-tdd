@@ -1,6 +1,7 @@
 package com.example.vsatdd.goodscollection;
 
 import org.springframework.context.annotation.Profile;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
@@ -32,6 +33,17 @@ public class GoodsCollectionInMemoryRepository implements GoodsCollectionReposit
     Map<Long, GoodsCollection> goodsCollectionMap = new HashMap<Long, GoodsCollection>();
 
     public GoodsCollectionInMemoryRepository() {
+        createGoodsCollectionForList();
+    }
+
+    private void createGoodsCollectionForList() {
+        GoodsCollection goodsCollection = new GoodsCollection("Collection 0", 1L);
+        goodsCollection.setId(goodsCollectionId.getAndIncrement());
+        goodsCollection.addItem(new GoodsCollectionItem(goodsMap.get(112296L)));
+        goodsCollection.addItem(new GoodsCollectionItem(goodsMap.get(112297L)));
+        goodsCollection.addItem(new GoodsCollectionItem(goodsMap.get(112298L)));
+        goodsCollection.addItem(new GoodsCollectionItem(goodsMap.get(112299L)));
+        goodsCollectionMap.put(goodsCollection.getId(), goodsCollection);
     }
 
     @Override
@@ -50,6 +62,13 @@ public class GoodsCollectionInMemoryRepository implements GoodsCollectionReposit
         return goodsMap.values().stream()
                 .filter(goods -> ids.contains(goods.goodsId()) || ids.contains(goods.barcode()))
                 .sorted(Comparator.comparing(Goods::goodsId)) // DB 쿼리와 정렬 순서를 맞추기 위해
+                .toList();
+    }
+
+    @Override
+    public List<GoodsCollection> findByNamingContaining(String keyword, Pageable pageable) {
+        return goodsCollectionMap.values().stream()
+                .filter(goodsCollection -> goodsCollection.getName().contains(keyword))
                 .toList();
     }
 }
