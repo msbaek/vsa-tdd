@@ -12,6 +12,8 @@ import org.springframework.graphql.test.tester.HttpGraphQlTester;
 import org.springframework.modulith.test.ApplicationModuleTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles("in-memory")
@@ -56,5 +58,36 @@ public class GoodsCollectionAcceptanceTest {
                                 repository.findById(result).get(), "id")
                 )
         );
+    }
+
+    @Test
+    public void listGoodsCollection() throws Exception {
+        String queryString = """
+             query {
+               listGoodsCollection(request: {
+                 keyword: "Collection",
+                 type: "type",
+                 page: 0,
+                 size: 10
+               }) {
+                 content {
+                   id
+                   name
+                   createdBy
+                   createdAt
+                   goodsCollectionItems {
+                     goodsNo
+                     goodsId
+                     barcode
+                   }
+                 }
+               }
+            }
+             """;
+
+        List<GetGoodsCollection.GoodsCollectionDto> result = request(queryString, "listGoodsCollection.content")
+                .entityList(GetGoodsCollection.GoodsCollectionDto.class)
+                .get();
+        Approvals.verify(Neutralizer.localDateTime(YamlPrinter.printWithExclusions(result, "updatedBy", "updatedAt")));
     }
 }
