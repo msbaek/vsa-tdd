@@ -550,6 +550,7 @@ public void listGoodsCollection() throws Exception {
                  size: 10
                }) {
                  content {
+                   id
                    name
                    createdBy
                    createdAt
@@ -719,7 +720,7 @@ public List<GoodsCollection> findByNamingContaining(String keyword, Pageable pag
           private LocalDateTime createdAt;
           private Long updatedBy;
           private LocalDateTime updatedAt;
-          @OneToMany(mappedBy = "goodsCollection", cascade = CascadeType.ALL, orphanRemoval = true)
+          @OneToMany(mappedBy = "goodsCollection", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
           private List<GoodsCollectionItem> goodsCollectionItems = new ArrayList<>();
           // ...
       ```
@@ -896,18 +897,18 @@ from [Growing Object-Oriented Software, Guided by Tests: Freeman, Steve, Pryce, 
   createdBy: 1
   createdAt: "2003-05-03T10:11:12.134567"
   goodsCollectionItems:
-    - goodsNo: 112307
-      goodsId: "GD00112307"
-      barcode: "9000000112307"
-    - goodsNo: 112306
-      goodsId: "GD00112306"
-      barcode: "9000000112306"
-    - goodsNo: 112304
-      goodsId: "GD00112304"
-      barcode: "9000000112304"
-    - goodsNo: 112303
-      goodsId: "GD00112303"
-      barcode: "9000000112303"
+    - goodsNo: 112296
+      goodsId: "GD00112296"
+      barcode: "9000000112296"
+    - goodsNo: 112297
+      goodsId: "GD00112297"
+      barcode: "9000000112297"
+    - goodsNo: 112298
+      goodsId: "GD00112298"
+      barcode: "9000000112298"
+    - goodsNo: 112299
+      goodsId: "GD00112299"
+      barcode: "9000000112299"
   ```
 - 회사에서 사용 중인 YamlPrinter, Neutralizer 등을 이용해서 포커싱해야 하는 정보만 확인
 - 꼭 필요한 정보만 보여줘서 가독성을 높게
