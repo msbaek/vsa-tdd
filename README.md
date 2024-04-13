@@ -1,5 +1,7 @@
 # Develop Application with VSA and TDD
 
+- 유튜브 영상: [Vertical Slice 방식으로 GraphQL 어플리케이션을 TDD로 구현하기](https://www.youtube.com/watch?v=ASSp38BguWI&t=2s)
+- 
 <!-- TOC -->
 
 * [Develop Application with VSA and TDD](#develop-application-with-vsa-and-tdd)
