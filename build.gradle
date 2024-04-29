@@ -44,7 +44,7 @@ dependencies {
 
 	implementation 'com.graphql-java:graphql-java-extended-scalars:21.0'
 	testImplementation 'com.approvaltests:approvaltests:23.0.1'
-	testImplementation 'com.github.HMInternational:ktown4u-utils:v1.5.0'
+	testImplementation 'com.github.HMInternational:ktown4u-utils:v1.5.1'
 }
 
 dependencyManagement {
